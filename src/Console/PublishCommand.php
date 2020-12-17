@@ -52,7 +52,7 @@ class PublishCommand extends Command {
     public function handle()
     {
 
-        $package = 'barryvdh/elfinder';
+        $package = 'mchuluq/larv/elfinder';
         $destination = $this->publishPath . "/packages/{$package}";
 
         if ( ! is_null($path = $this->getElfinderPath())) {
