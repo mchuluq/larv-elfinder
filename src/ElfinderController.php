@@ -164,6 +164,6 @@ class ElfinderController extends Controller
             $locale = false;
         }
         $csrf = true;
-        return compact('dir', 'locale', 'csrf','connector_url');
+        return compact('dir', 'locale', 'csrf');
     }
 }
