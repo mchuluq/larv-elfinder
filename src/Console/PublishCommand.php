@@ -53,7 +53,7 @@ class PublishCommand extends Command {
     {
 
         $package = 'mchuluq/larv/elfinder';
-        $destination = $this->publishPath . "/packages/{$package}";
+        $destination = $this->publishPath . "/assets/packages/{$package}";
 
         if ( ! is_null($path = $this->getElfinderPath())) {
             if ($this->files->exists($destination)) {
