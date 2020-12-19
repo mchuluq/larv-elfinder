@@ -5,4 +5,5 @@ Based on [barryvdh/laravel-elfinder](https://github.com/barryvdh/laravel-elfinde
 ### what i customized here
 
 - [x] personal folder for authenticated user
-- [ ] personal access to google drive
+- [x] personal access to google drive
+- [ ] max storage per-user

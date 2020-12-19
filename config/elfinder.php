@@ -91,4 +91,6 @@ return array(
 
     ),
 
+    // global config personal folder
+    'personal_folder' => false,
 );

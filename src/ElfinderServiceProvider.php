@@ -3,42 +3,25 @@
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
+
 class ElfinderServiceProvider extends ServiceProvider {
 
-	/**
-	 * Indicates if loading of the provider is deferred.
-	 *
-	 * @var bool
-	 */
-	protected $defer = false;
+    protected $defer = false;
 
-	/**
-	 * Register the service provider.
-	 *
-	 * @return void
-	 */
-	public function register()
-	{
+    public function register(){
         $configPath = __DIR__ . '/../config/elfinder.php';
         $this->mergeConfigFrom($configPath, 'elfinder');
         $this->publishes([$configPath => config_path('elfinder.php')], 'config');
-
-        $this->app->singleton('command.elfinder.publish', function($app)
-        {
+        $this->app->singleton('command.elfinder.publish', function($app){
 			$publicPath = $app['path.public'];
             return new Console\PublishCommand($app['files'], $publicPath);
         });
         $this->commands('command.elfinder.publish');
 	}
 
-	/**
-	 * Define your route model bindings, pattern filters, etc.
-	 *
-	 * @param  \Illuminate\Routing\Router  $router
-	 * @return void
-	 */
-	public function boot(Router $router)
-	{
+	public function boot(Router $router){
         $viewPath = __DIR__.'/../resources/views';
         $this->loadViewsFrom($viewPath, 'elfinder');
         $this->publishes([
@@ -64,15 +47,30 @@ class ElfinderServiceProvider extends ServiceProvider {
             //$router->get('tinymce5', ['as' => 'elfinder.tinymce5', 'uses' => 'ElfinderController@showTinyMCE5']);
             //$router->get('ckeditor', ['as' => 'elfinder.ckeditor', 'uses' => 'ElfinderController@showCKeditor4']);
         });
+
+        \Storage::extend('gdrive', function ($app, $config) {
+            $settings = (Auth::check() && $config['personal']) ? Auth::user()->settings : [];
+
+            $refreshToken = Arr::get($settings, 'gdrive.refreshToken',$config['refreshToken']);
+            $folderId = (Auth::check() && $config['personal']) ? Arr::get($settings, 'gdrive.folderId') : $config['folderId'];
+
+            $client = new \Google_Client();
+            $client->setClientId($config['clientId']);
+            $client->setClientSecret($config['clientSecret']);
+            $client->refreshToken($refreshToken);
+            $service = new \Google_Service_Drive($client);
+
+            $options = [];
+            if (isset($config['teamDriveId'])) {
+                $options['teamDriveId'] = $config['teamDriveId'];
+            }
+
+            $adapter = new \Mchuluq\Larv\Elfinder\Adapter\GoogleDriveAdapter($service, $folderId, $options);
+            return new \League\Flysystem\Filesystem($adapter);
+        });
 	}
 
-	/**
-	 * Get the services provided by the provider.
-	 *
-	 * @return array
-	 */
-	public function provides()
-	{
+	public function provides(){
 		return array('command.elfinder.publish');
 	}
 
