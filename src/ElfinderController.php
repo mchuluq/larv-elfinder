@@ -157,6 +157,7 @@ class ElfinderController extends Controller{
             $locale = false;
         }
         $csrf = true;
-        return compact('dir', 'locale', 'csrf');
+        $title = 'File Manager';
+        return compact('dir', 'locale', 'csrf','title');
     }
 }
