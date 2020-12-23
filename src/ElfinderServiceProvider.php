@@ -54,6 +54,10 @@ class ElfinderServiceProvider extends ServiceProvider {
             $refreshToken = Arr::get($settings, 'gdrive.refreshToken',$config['refreshToken']);
             $folderId = (Auth::check() && $config['personal']) ? Arr::get($settings, 'gdrive.folderId') : $config['folderId'];
 
+            if(!$refreshToken){
+                return null;
+            }
+
             $client = new \Google_Client();
             $client->setClientId($config['clientId']);
             $client->setClientSecret($config['clientSecret']);
